@@ -1,0 +1,23 @@
+{
+	"geode": "4.1.2",
+	"gd": {
+		"win": "2.2074",
+		"android": "2.2074",
+		"mac": "2.2074"
+	},
+	"id": "ml5.improved-paths",
+	"name": "Improved Paths",
+	"version": "v1.0.0",
+	"developers": [
+		"ML500"
+	],
+	"description": "Small additions to the Paths of Power",
+	"links": {
+		"community": "https://discord.gg/tFUyJw5"
+	},
+	"tags": [
+		"interface",
+		"enhancement",
+		"offline"
+	]
+}
