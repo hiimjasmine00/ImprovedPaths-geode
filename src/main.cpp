@@ -47,16 +47,17 @@ class $modify(ModdedGJPathsLayer, GJPathsLayer)
             totalCost += !AM->isAchievementEarned(fmt::format("geometry.ach.path{:02}.00", ii).c_str()) * PATH_PRICE;
 
         //  If all the paths weren't bought, adds the Price label
+        //  (There might be another method to find it but haven't discovered it yet)
         if (totalCost != 0)
         {
             auto priceText = CCLabelBMFont::create("To Buy all paths:", "goldFont.fnt");
-            priceText->setPosition({counterBG->getPositionX(), counterBG->getPositionY() - 28});
+            priceText->setPosition({counterBG->getPositionX(), counterBG->getPositionY() - 30});
             priceText->setID("price-text"_spr);
             priceText->setAnchorPoint({1, 0});
             priceText->setScale(0.6f);
 
             auto priceLabel = CCLabelBMFont::create(fmt::format("{}", totalCost).c_str(), "bigFont.fnt");
-            priceLabel->setPosition({priceText->getPositionX(), priceText->getPositionY() - 10});
+            priceLabel->setPosition({priceText->getPositionX(), priceText->getPositionY() - 12});
             priceLabel->setColor({0, 255, 255});
             priceLabel->setAnchorPoint({1, 0.5});
             priceLabel->setID("orbs-cost"_spr);
@@ -72,31 +73,28 @@ class $modify(ModdedGJPathsLayer, GJPathsLayer)
 
         //  Gets the button Menu
         //  (This will change when Node IDs for the PathLayer exists)
-        if (auto menu = static_cast<CCMenu *>(m_mainLayer->getChildren()->objectAtIndex(1)))
+        for (auto ii = 1; ii < m_buttonMenu->getChildrenCount(); ii++)
         {
-            for (auto ii = 1; ii < menu->getChildrenCount(); ii++)
+            //  Gets the button's position
+            auto button = static_cast<CCMenuItemSpriteExtra *>(m_buttonMenu->getChildren()->objectAtIndex(ii));
+            CCPoint buttonPos = {m_buttonMenu->getPositionX() + button->getPositionX(), m_buttonMenu->getPositionY() + button->getPositionY()};
+
+            //  If the button is the active path, creates the arrow
+            if (ii == activePath - 29)
             {
-                //  Gets the button's position
-                auto button = static_cast<CCMenuItemSpriteExtra *>(menu->getChildren()->objectAtIndex(ii));
-                CCPoint buttonPos = {164.5f + button->getPositionX(), 280.f + button->getPositionY()};
+                //  Arrow sprite
+                auto arrow = CCSprite::createWithSpriteFrameName("edit_downBtn_001.png");
+                arrow->setPosition({buttonPos.x, buttonPos.y + 25});
+                arrow->setID("active-path-arrow"_spr);
+                arrow->setZOrder(50);
 
-                //  If the button is the active path, creates the arrow
-                if (ii == activePath - 29)
-                {
-                    //  Arrow sprite
-                    auto arrow = CCSprite::createWithSpriteFrameName("edit_downBtn_001.png");
-                    arrow->setPosition({buttonPos.x, buttonPos.y + 25});
-                    arrow->setID("active-path-arrow"_spr);
-                    arrow->setZOrder(50);
+                //  Arrow's animation
+                auto moveUp = CCEaseInOut::create(CCMoveTo::create(1.0f, {buttonPos.x, buttonPos.y + 30}), 1.8f);
+                auto moveDown = CCEaseInOut::create(CCMoveTo::create(1.0f, {buttonPos.x, buttonPos.y + 25}), 1.8f);
+                arrow->runAction(CCRepeatForever::create(CCSequence::createWithTwoActions(moveUp, moveDown)));
 
-                    //  Arrow's animation
-                    auto moveUp = CCEaseInOut::create(CCMoveTo::create(1.0f, {buttonPos.x, buttonPos.y + 30}), 1.8f);
-                    auto moveDown = CCEaseInOut::create(CCMoveTo::create(1.0f, {buttonPos.x, buttonPos.y + 25}), 1.8f);
-                    arrow->runAction(CCRepeatForever::create(CCSequence::createWithTwoActions(moveUp, moveDown)));
-
-                    m_mainLayer->addChild(arrow);
-                };
-            }
+                m_mainLayer->addChild(arrow);
+            };
         }
 
         return true;
