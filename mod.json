@@ -1,5 +1,5 @@
 {
-	"geode": "4.1.2",
+	"geode": "4.2.0",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -7,7 +7,7 @@
 	},
 	"id": "ml5.improved-paths",
 	"name": "Improved Paths",
-	"version": "v1.0.1",
+	"version": "v1.1.0",
 	"developers": [
 		"ML500"
 	],

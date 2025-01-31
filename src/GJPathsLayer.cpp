@@ -3,6 +3,7 @@
 
 using namespace geode::prelude;
 
+//  Constant for the path price
 const int PATH_PRICE = 25000;
 
 class $modify(ModdedGJPathsLayer, GJPathsLayer)
