@@ -24,92 +24,91 @@ class $modify(ModdedGJPathPage, GJPathPage)
     static GJPathPage *create(int p0, GJPathsLayer *p1)
     {
         //  Adds the Treasure Room Sheet into the cache for this layer (Since I use the Chest platform)
-        auto SFC = CCSpriteFrameCache::get();
-        SFC->addSpriteFramesWithFile("TreasureRoomSheet.plist");
-        
+        CCSpriteFrameCache::get()->addSpriteFramesWithFile("TreasureRoomSheet.plist");
+
         //  Creates the layer and window size
-        auto layer = GJPathPage::create(p0, p1);
         auto winSize = CCDirector::sharedDirector()->getWinSize();
+        auto layer = GJPathPage::create(p0, p1);
 
         //  For the Icon you get from the special chest upon completing the path
         //  Somehow, it doesn't have their own achievement
-        std::pair<UnlockType, int> finalRewardIcon;
+        std::pair<UnlockType, int> iconData;
         ccColor3B color1, color2;
 
         switch (p0)
         {
         case 1:
             // Fire
-            finalRewardIcon = {UnlockType::Swing, 19};
+            iconData = {UnlockType::Swing, 19};
             color1 = {255, 75, 0};
             color2 = {255, 200, 0};
             break;
 
         case 2:
             // Ice
-            finalRewardIcon = {UnlockType::Robot, 48};
+            iconData = {UnlockType::Robot, 48};
             color1 = {0, 150, 255};
             color2 = {0, 255, 255};
             break;
 
         case 3:
             // Poison
-            finalRewardIcon = {UnlockType::Bird, 146};
+            iconData = {UnlockType::Bird, 146};
             color1 = {0, 160, 0};
             color2 = {0, 255, 0};
             break;
 
         case 4:
             // Shadow
-            finalRewardIcon = {UnlockType::Robot, 40};
+            iconData = {UnlockType::Robot, 40};
             color1 = {150, 0, 200};
             color2 = {255, 50, 255};
             break;
 
         case 5:
             // Lava
-            finalRewardIcon = {UnlockType::Ship, 94};
+            iconData = {UnlockType::Ship, 94};
             color1 = {175, 0, 0};
             color2 = {255, 50, 25};
             break;
 
         case 6:
             // Earth
-            finalRewardIcon = {UnlockType::Ship, 91};
+            iconData = {UnlockType::Ship, 91};
             color1 = {163, 98, 70};
             color2 = {253, 224, 160};
             break;
 
         case 7:
             // Blood
-            finalRewardIcon = {UnlockType::Ship, 98};
+            iconData = {UnlockType::Ship, 98};
             color1 = {150, 0, 0};
             color2 = {255, 0, 0};
             break;
 
         case 8:
             // Metal
-            finalRewardIcon = {UnlockType::Cube, 359};
+            iconData = {UnlockType::Cube, 359};
             color1 = {128, 128, 128};
             color2 = {255, 255, 255};
             break;
 
         case 9:
             // Light
-            finalRewardIcon = {UnlockType::Robot, 66};
+            iconData = {UnlockType::Robot, 66};
             color1 = {255, 250, 127};
             color2 = {255, 255, 192};
             break;
 
         case 10:
             // Soul
-            finalRewardIcon = {UnlockType::Swing, 360};
+            iconData = {UnlockType::Swing, 36};
             color1 = {100, 0, 150};
             color2 = {255, 0, 125};
             break;
 
         default:
-            finalRewardIcon = {UnlockType::Cube, 1};
+            iconData = {UnlockType::Cube, 1};
             break;
         }
 
@@ -121,51 +120,31 @@ class $modify(ModdedGJPathPage, GJPathPage)
         menu->setID("mod-menu"_spr);
         layer->m_mainLayer->addChild(menu);
 
-        CCSprite *sprite;
-        if (GM->isIconUnlocked(finalRewardIcon.second, GM->unlockTypeToIconType((int)finalRewardIcon.first)))
-        {
-            sprite = GJItemIcon::create(finalRewardIcon.first, finalRewardIcon.second, color1, color2, false, false, false, color2);
+        //  Creates the Sprite of the last reward icon
+        auto icon = GJItemIcon::create(iconData.first, iconData.second, color1, color2, false, false, false, color2);
+        if (!GM->isIconUnlocked(iconData.second, GM->unlockTypeToIconType((int)iconData.first)))
+            icon->changeToLockedState(1);
 
-            auto chestSprite = CCSprite::create();
-            auto chestTop = CCSprite::createWithSpriteFrameName("chest_06_04_001.png");
-            auto chestBottom = CCSprite::createWithSpriteFrameName("chest_06_04_back_001.png");
-
-            chestTop->setOpacity(100);
-            chestBottom->setOpacity(100);
-
-            chestSprite->setScale(0.4);
-            chestSprite->addChild(chestTop);
-            chestSprite->addChild(chestBottom, -1);
-            chestSprite->setPosition({winSize.width / 2, winSize.height / 2 - 100.0f});
-
-            layer->m_mainLayer->addChild(chestSprite);
-        }
-        else
-        {
-            sprite = CCSprite::createWithSpriteFrameName("chest_06_02_001.png");
-            sprite->setScale(0.4);
-        }
-
-        auto chestButton = CCMenuItemSpriteExtra::create(
-            sprite,
-            layer,
-            menu_selector(ModdedGJPathPage::onLastRewardChest));
-
-        chestButton->setUserObject(new IconParameters(finalRewardIcon.first, finalRewardIcon.second));
-        chestButton->setPosition({winSize.width / 2, winSize.height / 2 - 100.0f});
-        chestButton->setID("final-reward-chest");
-        chestButton->setContentSize({50, 50});
-
+        //  Adds the platform for aesthetic
         auto platform = CCSprite::createWithSpriteFrameName("chestPlatform_01_001.png");
         platform->setPosition({winSize.width / 2, winSize.height / 2 - 120.0f});
         platform->setColor(color1);
-
-        sprite->setPosition({25, 25});
-        menu->addChild(chestButton);
-        menu->setZOrder(5);
-
         layer->m_mainLayer->addChild(platform);
 
+        //  Button for the Icon
+        auto rewardButton = CCMenuItemSpriteExtra::create(
+            icon,
+            layer,
+            menu_selector(ModdedGJPathPage::onLastRewardChest));
+        rewardButton->setUserObject(new IconParameters(iconData.first, iconData.second));
+        rewardButton->setPosition({winSize.width / 2, winSize.height / 2 - 100.0f});
+        rewardButton->setID("final-reward");
+
+        rewardButton->setContentSize({50, 50});
+        icon->setPosition({25, 25});
+
+        menu->addChild(rewardButton);
+        menu->setZOrder(5);
         return layer;
     }
 
