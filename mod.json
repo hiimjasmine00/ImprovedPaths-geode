@@ -1,5 +1,6 @@
 {
 	"geode": "4.2.0",
+	"version": "v1.1.0-beta.1",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -7,13 +8,20 @@
 	},
 	"id": "ml5.improved-paths",
 	"name": "Improved Paths",
-	"version": "v1.1.0",
 	"developers": [
 		"ML500"
 	],
 	"description": "Small additions to the Paths of Power",
 	"links": {
 		"community": "https://discord.gg/tFUyJw5"
+	},
+	"settings": {
+		"last-reward": {
+			"type": "bool",
+			"name": "Display final reward",
+			"description": "Display the final reward you get from a <cy>Special chest</c> upon completing the path",
+			"default": true
+		}
 	},
 	"tags": [
 		"interface",

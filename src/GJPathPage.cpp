@@ -23,6 +23,11 @@ class $modify(ModdedGJPathPage, GJPathPage)
 {
     static GJPathPage *create(int p0, GJPathsLayer *p1)
     {
+        auto showFinalReward = Mod::get()->getSettingValue<bool>("last-reward");
+
+        if (!showFinalReward)
+            return GJPathPage::create(p0, p1);
+
         //  Adds the Treasure Room Sheet into the cache for this layer (Since I use the Chest platform)
         CCSpriteFrameCache::get()->addSpriteFramesWithFile("TreasureRoomSheet.plist");
 
@@ -127,9 +132,17 @@ class $modify(ModdedGJPathPage, GJPathPage)
 
         //  Adds the platform for aesthetic
         auto platform = CCSprite::createWithSpriteFrameName("chestPlatform_01_001.png");
-        platform->setPosition({winSize.width / 2, winSize.height / 2 - 120.0f});
+        platform->setPosition({winSize.width / 2, winSize.height / 2 - 125.0f});
+        platform->setID("final-reward-platform"_spr);
         platform->setColor(color1);
         layer->m_mainLayer->addChild(platform);
+
+        //  Label for the icon
+        auto label = CCLabelBMFont::create("Final Reward:", "goldFont.fnt");
+        label->setPosition({winSize.width / 2, winSize.height / 2 - 80.0f});
+        label->setID("final-reward-label"_spr);
+        label->setScale(0.5f);
+        layer->m_mainLayer->addChild(label);
 
         //  Button for the Icon
         auto rewardButton = CCMenuItemSpriteExtra::create(
@@ -138,7 +151,7 @@ class $modify(ModdedGJPathPage, GJPathPage)
             menu_selector(ModdedGJPathPage::onLastRewardChest));
         rewardButton->setUserObject(new IconParameters(iconData.first, iconData.second));
         rewardButton->setPosition({winSize.width / 2, winSize.height / 2 - 100.0f});
-        rewardButton->setID("final-reward");
+        rewardButton->setID("final-reward"_spr);
 
         rewardButton->setContentSize({50, 50});
         icon->setPosition({25, 25});
